@@ -42,6 +42,35 @@ Rules:
 - **Fail-closed:** if a config is invalid or unreadable, all managed tool calls are blocked until it is fixed. Error messages never include file contents or YAML text.
 - The config files themselves cannot be modified by `write`/`edit`, nor mentioned in shell commands. `read` is allowed.
 
+## Example
+
+This repo ships a project config at `.pi/file-guard.yaml`:
+
+```yaml
+version: 1
+deny:
+  - "**/.env{,.*}"
+  - "**/config.yaml"
+  - "**/config.yml"
+  - "./config.yaml"
+  - "./config.yml"
+```
+
+It also ships `.env`, `.env.local`, `config.yaml`, and `config.yml` as sample files, so you can see the guard in action immediately. The `**/.env{,.*}` rule matches both `.env` and `.env.local`, so the model can no longer touch them through any managed tool:
+
+```text
+> read .env
+Blocked by pi-file-guard: path ".../.env" matches deny rule "**/.env{,.*}".
+
+> bash: cat .env
+Blocked by pi-file-guard: path ".../.env" matches deny rule "**/.env{,.*}".
+
+> bash: cat .env.local
+Blocked by pi-file-guard: path ".../.env.local" matches deny rule "**/.env{,.*}".
+```
+
+The `config.yaml` / `config.yml` rules behave the same way, so `read config.yaml` and `bash: cat config.yml` are blocked too. Project rules are merged on top of the global config (a project can add rules, never remove global ones), while unprotected files keep working as usual.
+
 ## What is checked
 
 | Tool | Behaviour |

@@ -42,6 +42,35 @@ deny:
 - **失败即拒绝：** 配置无效或无法读取时，所有受管工具调用都会被阻止，直到修复为止。错误信息不会包含文件内容或 YAML 原文。
 - 配置文件本身不能被 `write`/`edit` 修改，也不能出现在 shell 命令中；`read` 允许。
 
+## 示例
+
+本仓库自带一个项目配置 `.pi/file-guard.yaml`：
+
+```yaml
+version: 1
+deny:
+  - "**/.env{,.*}"
+  - "**/config.yaml"
+  - "**/config.yml"
+  - "./config.yaml"
+  - "./config.yml"
+```
+
+同时还附带了 `.env`、`.env.local`、`config.yaml`、`config.yml` 作为范例文件，便于你立即看到保护效果。`**/.env{,.*}` 规则会同时匹配 `.env` 和 `.env.local`，因此模型无法再通过任何受管工具访问它们：
+
+```text
+> read .env
+Blocked by pi-file-guard: path ".../.env" matches deny rule "**/.env{,.*}".
+
+> bash: cat .env
+Blocked by pi-file-guard: path ".../.env" matches deny rule "**/.env{,.*}".
+
+> bash: cat .env.local
+Blocked by pi-file-guard: path ".../.env.local" matches deny rule "**/.env{,.*}".
+```
+
+`config.yaml` / `config.yml` 规则同理，所以 `read config.yaml`、`bash: cat config.yml` 也会被拒绝。项目规则会叠加在全局配置之上（项目只能追加、不能移除全局规则），而未受保护的文件照常可用。
+
 ## 检查范围
 
 | 工具 | 行为 |
