@@ -1,0 +1,17 @@
+# pi-file-guard configuration.
+# Global: <agentDir>/file-guard.yaml   Project: <cwd>/.pi/file-guard.yaml
+# Rules are minimatch globs; relative patterns are rooted at the session cwd.
+# Project rules are added to global rules; they cannot remove them.
+#
+# To protect more files, append entries to `deny`, for example:
+#   - "**/credentials"
+#   - "**/credentials.*"
+#   - "**/config.yaml"
+#   - "**/config.yml"
+version: 1
+deny:
+  - "**/.env{,.*}"
+  - "**/config.yaml"
+  - "**/config.yml"
+  - "./config.yaml"
+  - "./config.yml"

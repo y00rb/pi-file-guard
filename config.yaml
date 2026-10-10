@@ -1,0 +1,3 @@
+# Fake values for manually testing pi-file-guard. Not real secrets.
+# Not protected by default; add "**/config.yaml" to deny to test it.
+secret: fake-config-yaml-secret-do-not-use
